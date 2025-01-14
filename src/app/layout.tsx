@@ -1,8 +1,6 @@
-import { Footer } from "@/components/layout/footer";
-import { SiteHeader } from "@/components/layout/site-header";
-import { CartProvider } from "@/context/cart-context";
 import type { Metadata } from "next";
 import { Rubik } from "next/font/google";
+import ClientLayout from "./ClientLayout";
 import "./globals.css";
 
 const rubik = Rubik({
@@ -23,15 +21,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html lang="pt-BR" suppressHydrationWarning className="antialiased">
       <body className={rubik.className}>
-        <CartProvider>
-          <div className="relative flex min-h-screen flex-col">
-            <SiteHeader />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
-        </CartProvider>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );
