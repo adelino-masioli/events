@@ -356,3 +356,50 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+
+-- Create notifications table
+CREATE TABLE notifications (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  message TEXT NOT NULL,
+  status BOOLEAN DEFAULT FALSE,
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Set up RLS (Row Level Security) for notifications
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view own notifications" ON notifications;
+DROP POLICY IF EXISTS "Service role can create notifications" ON notifications;
+DROP POLICY IF EXISTS "Users can update own notifications" ON notifications;
+DROP POLICY IF EXISTS "Users can delete own notifications" ON notifications;
+
+-- Create a single policy for authenticated users to manage their own notifications
+CREATE POLICY "Users can manage own notifications"
+  ON notifications
+  FOR ALL
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
+-- Create policy for service role to create notifications
+CREATE POLICY "Service role can create notifications"
+  ON notifications
+  FOR INSERT
+  TO service_role
+  WITH CHECK (true);
+
+-- Create trigger for updating updated_at column
+CREATE TRIGGER update_notifications_updated_at
+    BEFORE UPDATE ON notifications
+    FOR EACH ROW EXECUTE PROCEDURE public.update_updated_at_column();
+
+-- Create index for faster queries
+CREATE INDEX notifications_user_id_idx ON notifications(user_id);
+CREATE INDEX notifications_created_at_idx ON notifications(created_at DESC);
+CREATE INDEX notifications_status_idx ON notifications(status);
+
+-- Add comment to describe the table
+COMMENT ON TABLE notifications IS 'User notifications for various events and updates';

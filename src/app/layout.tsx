@@ -1,5 +1,8 @@
+import { AuthProvider } from "@/contexts/auth-context";
+import { toastConfig } from "@/lib/toast";
 import type { Metadata } from "next";
 import { Rubik } from "next/font/google";
+import { Toaster } from "sonner";
 import ClientLayout from "./ClientLayout";
 import "./globals.css";
 
@@ -23,7 +26,10 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning className="antialiased">
       <body className={rubik.className}>
-        <ClientLayout>{children}</ClientLayout>
+        <AuthProvider>
+          <ClientLayout>{children}</ClientLayout>
+          <Toaster {...toastConfig} />
+        </AuthProvider>
       </body>
     </html>
   );

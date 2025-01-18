@@ -56,7 +56,12 @@
   body {
     @apply bg-background text-foreground;
   }
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-medium tracking-tight;
   }
   h1 {
@@ -77,4 +82,105 @@
   h6 {
     @apply text-base;
   }
+}
+
+/* Toast customization */
+.toaster-wrapper {
+  --toaster-success-bg: #10b981;
+  --toaster-error-bg: #ef4444;
+  --toaster-info-bg: #3b82f6;
+  --toaster-warning-bg: #f59e0b;
+}
+
+/* Toast animations */
+.toast {
+  @apply shadow-lg rounded-lg transition-all duration-200;
+}
+
+/* Slide animations */
+.toast[data-animation="slide"] {
+  animation: toast-slide-in 0.2s ease-out;
+}
+
+/* Fade animations */
+.toast[data-animation="fade"] {
+  animation: toast-fade-in 0.2s ease-out;
+}
+
+/* Scale animations */
+.toast[data-animation="scale"] {
+  animation: toast-scale-in 0.2s ease-out;
+}
+
+/* Swipe animations */
+.toast[data-swipe="move"] {
+  @apply transition-none;
+}
+
+.toast[data-swipe="cancel"] {
+  @apply transition-all;
+}
+
+.toast[data-swipe="end"] {
+  animation: toast-swipe-out 0.2s ease-out forwards;
+}
+
+/* Animation keyframes */
+@keyframes toast-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes toast-scale-in {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-swipe-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Toast variants */
+.toast-success {
+  @apply border-l-4 border-l-emerald-500 bg-emerald-50/50;
+}
+
+.toast-error {
+  @apply border-l-4 border-l-red-500 bg-red-50/50;
+}
+
+.toast-info {
+  @apply border-l-4 border-l-blue-500 bg-blue-50/50;
+}
+
+.toast-warning {
+  @apply border-l-4 border-l-amber-500 bg-amber-50/50;
 }

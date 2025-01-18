@@ -5,16 +5,36 @@ import {
   SupabaseClient,
 } from "@supabase/supabase-js";
 
-let supabase: SupabaseClient | null = null;
+let supabaseInstance: SupabaseClient | null = null;
 
 export function createClient() {
-  // Se a instância já foi criada, reutilize
-  if (!supabase) {
-    supabase = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  if (!supabaseInstance) {
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      throw new Error("Missing env.NEXT_PUBLIC_SUPABASE_URL");
+    }
+
+    if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      throw new Error("Missing env.NEXT_PUBLIC_SUPABASE_ANON_KEY");
+    }
+
+    supabaseInstance = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
+        },
+        db: {
+          schema: "public",
+        },
+      }
     );
   }
 
-  return supabase;
+  return supabaseInstance;
 }
+
+// Export the instance for direct use
+export const supabase = createClient();
